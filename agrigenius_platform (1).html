@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriGenius - AI for Organic Farmers</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+            min-height: 100vh;
+            color: #e2e8f0;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Animated background elements */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .floating-leaf {
+            position: absolute;
+            opacity: 0.1;
+            animation: float 20s infinite linear;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(100vh) rotate(0deg); }
+            100% { transform: translateY(-100px) rotate(360deg); }
+        }
+
+        /* Header */
+        header {
+            position: relative;
+            z-index: 10;
+            padding: 20px 0;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(34, 197, 94, 0.2);
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #22c55e;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(45deg, #22c55e, #16a34a);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: #cbd5e1;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #22c55e;
+        }
+
+        /* Hero Section */
+        .hero {
+            position: relative;
+            z-index: 10;
+            padding: 100px 0;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #22c55e, #16a34a, #15803d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { filter: drop-shadow(0 0 20px rgba(34, 197, 94, 0.3)); }
+            to { filter: drop-shadow(0 0 30px rgba(34, 197, 94, 0.5)); }
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: #94a3b8;
+            max-width: 600px;
+            margin: 0 auto 40px;
+            line-height: 1.6;
+        }
+
+        .cta-button {
+            background: linear-gradient(45deg, #22c55e, #16a34a);
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(34, 197, 94, 0.4);
+        }
+
+        /* Chat Interface */
+        .chat-container {
+            position: relative;
+            z-index: 10;
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            margin: 50px auto;
+            max-width: 800px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .chat-header {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            padding: 20px;
+            text-align: center;
+            color: white;
+        }
+
+        .chat-header h2 {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+
+        .chat-header p {
+            opacity: 0.9;
+        }
+
+        .chat-messages {
+            height: 400px;
+            overflow-y: auto;
+            padding: 20px;
+            background: rgba(15, 23, 42, 0.5);
+        }
+
+        .message {
+            margin-bottom: 15px;
+            padding: 12px 16px;
+            border-radius: 15px;
+            max-width: 80%;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .user-message {
+            background: linear-gradient(45deg, #22c55e, #16a34a);
+            color: white;
+            margin-left: auto;
+            border-bottom-right-radius: 5px;
+        }
+
+        .ai-message {
+            background: rgba(51, 65, 85, 0.8);
+            color: #e2e8f0;
+            border-bottom-left-radius: 5px;
+            border-left: 3px solid #22c55e;
+        }
+
+        .chat-input-container {
+            padding: 20px;
+            background: rgba(30, 41, 59, 0.9);
+            border-top: 1px solid rgba(34, 197, 94, 0.2);
+        }
+
+        .chat-input-form {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 15px;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            border-radius: 25px;
+            background: rgba(15, 23, 42, 0.8);
+            color: #e2e8f0;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .chat-input:focus {
+            border-color: #22c55e;
+            box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+        }
+
+        .send-button {
+            background: linear-gradient(45deg, #22c55e, #16a34a);
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform 0.2s ease;
+        }
+
+        .send-button:hover {
+            transform: scale(1.05);
+        }
+
+        /* Features Section */
+        .features {
+            position: relative;
+            z-index: 10;
+            padding: 80px 0;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+            margin-top: 50px;
+        }
+
+        .features h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 50px;
+            color: #22c55e;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .feature-card {
+            background: rgba(30, 41, 59, 0.8);
+            padding: 30px;
+            border-radius: 15px;
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(34, 197, 94, 0.2);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        .feature-card h3 {
+            color: #22c55e;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .feature-card p {
+            color: #94a3b8;
+            line-height: 1.6;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .chat-container {
+                margin: 20px;
+                max-width: none;
+            }
+        }
+
+        /* Custom Scrollbar */
+        .chat-messages::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .chat-messages::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.5);
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: rgba(34, 197, 94, 0.5);
+            border-radius: 4px;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb:hover {
+            background: rgba(34, 197, 94, 0.7);
+        }
+
+        /* Loading animation */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: #22c55e;
+        }
+
+        .loading-dots {
+            display: inline-block;
+            position: relative;
+            width: 40px;
+            height: 10px;
+        }
+
+        .loading-dots div {
+            position: absolute;
+            top: 0;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #22c55e;
+            animation: loading-animation 1.2s linear infinite;
+        }
+
+        .loading-dots div:nth-child(1) { left: 0; animation-delay: -0.24s; }
+        .loading-dots div:nth-child(2) { left: 16px; animation-delay: -0.12s; }
+        .loading-dots div:nth-child(3) { left: 32px; animation-delay: 0s; }
+
+        @keyframes loading-animation {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation">
+        <div class="floating-leaf" style="left: 10%; animation-delay: 0s;">🌿</div>
+        <div class="floating-leaf" style="left: 20%; animation-delay: 5s;">🌱</div>
+        <div class="floating-leaf" style="left: 70%; animation-delay: 10s;">🍃</div>
+        <div class="floating-leaf" style="left: 85%; animation-delay: 15s;">🌿</div>
+    </div>
+
+    <header>
+        <div class="container">
+            <nav class="nav">
+                <div class="logo">
+                    <div class="logo-icon">🌱</div>
+                    <span>AgriGenius</span>
+                </div>
+                <ul class="nav-links">
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <h1>AgriGenius</h1>
+            <p>Your AI-powered companion for organic farming success. Get expert guidance, solve problems, and grow sustainably with the power of artificial intelligence tailored specifically for passionate organic farmers.</p>
+            <a href="#chat" class="cta-button">Start Growing Smarter</a>
+        </div>
+    </section>
+
+    <div class="container">
+        <div class="chat-container" id="chat">
+            <div class="chat-header">
+                <h2>🌱 AgriGenius AI Assistant</h2>
+                <p>Ask me anything about organic farming, soil health, pest management, crop rotation, and more!</p>
+            </div>
+            
+            <div class="chat-messages" id="chatMessages">
+                <div class="message ai-message">
+                    <strong>🌱 AgriGenius:</strong> Hello! I'm AgriGenius, your dedicated AI assistant for organic farming. I'm here to help you with everything from soil health and pest management to crop rotation and sustainable practices. What farming challenge can I help you solve today?
+                </div>
+            </div>
+            
+            <div class="loading" id="loading">
+                <div class="loading-dots">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+                <p>AgriGenius is thinking...</p>
+            </div>
+            
+            <div class="chat-input-container">
+                <form class="chat-input-form" id="chatForm">
+                    <input 
+                        type="text" 
+                        class="chat-input" 
+                        id="chatInput" 
+                        placeholder="Ask about organic farming, soil health, pest control, etc..."
+                        required
+                    >
+                    <button type="submit" class="send-button">Send 🚀</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <section class="features" id="features">
+        <div class="container">
+            <h2>How AgriGenius Helps You</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🌱</div>
+                    <h3>Soil Health Analysis</h3>
+                    <p>Get expert advice on soil composition, pH levels, organic matter content, and natural amendments to optimize your soil health.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🐛</div>
+                    <h3>Organic Pest Management</h3>
+                    <p>Identify pests and diseases with natural, organic solutions that protect your crops without harmful chemicals.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔄</div>
+                    <h3>Crop Rotation Planning</h3>
+                    <p>Design effective crop rotation schedules to improve soil fertility, reduce pests, and maximize yields naturally.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🌾</div>
+                    <h3>Organic Certification</h3>
+                    <p>Navigate organic certification requirements and maintain compliance with detailed guidance and best practices.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💧</div>
+                    <h3>Water Management</h3>
+                    <p>Optimize irrigation systems, conserve water, and implement sustainable water management practices for your farm.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📈</div>
+                    <h3>Yield Optimization</h3>
+                    <p>Increase productivity using organic methods, companion planting, and natural growth enhancement techniques.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        const chatForm = document.getElementById('chatForm');
+        const chatInput = document.getElementById('chatInput');
+        const chatMessages = document.getElementById('chatMessages');
+        const loading = document.getElementById('loading');
+
+        // Advanced AI Response System - Dynamic and Intelligent
+        function getAIResponse(userMessage) {
+            const message = userMessage.toLowerCase().trim();
+            
+            // Check if farming-related
+            const farmingKeywords = [
+                'farm', 'farming', 'crop', 'crops', 'soil', 'plant', 'planting', 'grow', 'growing', 'organic', 
+                'pest', 'pests', 'harvest', 'seed', 'seeds', 'compost', 'fertilizer', 'irrigation', 'water', 
+                'watering', 'garden', 'gardening', 'agriculture', 'vegetable', 'vegetables', 'fruit', 'fruits',
+                'tomato', 'pepper', 'lettuce', 'carrot', 'onion', 'bean', 'corn', 'cucumber', 'disease', 
+                'diseases', 'insect', 'insects', 'bug', 'bugs', 'weed', 'weeds', 'mulch', 'rotation',
+                'ph', 'nutrients', 'nitrogen', 'phosphorus', 'potassium', 'manure', 'sustainable',
+                'season', 'spring', 'summer', 'fall', 'winter', 'yield', 'harvest', 'drought', 'rain',
+                'organic', 'natural', 'pesticide', 'herbicide', 'fungicide', 'compost', 'mulch', 'greenhouse',
+                'hydroponics', 'aquaponics', 'permaculture', 'biodynamic', 'regenerative', 'sustainable'
+            ];
+            
+            const isFarmingRelated = farmingKeywords.some(keyword => message.includes(keyword));
+            
+            if (!isFarmingRelated) {
+                return "🌱 I'm AgriGenius, your dedicated AI assistant for organic farming! I specialize in helping farmers with soil health, pest management, crop planning, organic certification, and sustainable practices. Please ask me any farming-related question, and I'll provide detailed, personalized guidance based on your specific situation. What farming challenge can I help you solve today?";
+            }
+            
+            // Advanced Dynamic Response Generation
+            return generateDynamicResponse(message, userMessage);
+        }
+
+        function generateDynamicResponse(message, originalMessage) {
+            // Analyze the question type and context
+            const questionType = analyzeQuestionType(message);
+            const cropMentioned = extractCropMentioned(message);
+            const problemType = extractProblemType(message);
+            const seasonContext = extractSeasonContext(message);
+            
+            // Generate contextual response based on analysis
+            let response = "🌱 ";
+            
+            // Handle specific question types
+            if (questionType === 'how') {
+                response += generateHowToResponse(message, cropMentioned, problemType);
+            } else if (questionType === 'what') {
+                response += generateWhatResponse(message, cropMentioned, problemType);
+            } else if (questionType === 'when') {
+                response += generateWhenResponse(message, cropMentioned, seasonContext);
+            } else if (questionType === 'why') {
+                response += generateWhyResponse(message, cropMentioned, problemType);
+            } else if (questionType === 'where') {
+                response += generateWhereResponse(message, cropMentioned);
+            } else {
+                response += generateGeneralResponse(message, cropMentioned, problemType);
+            }
+            
+            // Add seasonal context if relevant
+            if (seasonContext) {
+                response += addSeasonalContext(seasonContext);
+            }
+            
+            // Add follow-up suggestion
+            response += generateFollowUp(cropMentioned, problemType);
+            
+            return response;
+        }
+
+        function analyzeQuestionType(message) {
+            if (message.includes('how')) return 'how';
+            if (message.includes('what')) return 'what';
+            if (message.includes('when')) return 'when';
+            if (message.includes('why')) return 'why';
+            if (message.includes('where')) return 'where';
+            return 'general';
+        }
+
+        function extractCropMentioned(message) {
+            const crops = {
+                'tomato': 'tomatoes', 'pepper': 'peppers', 'lettuce': 'lettuce', 'carrot': 'carrots',
+                'onion': 'onions', 'bean': 'beans', 'corn': 'corn', 'cucumber': 'cucumbers',
+                'potato': 'potatoes', 'spinach': 'spinach', 'broccoli': 'broccoli', 'cabbage': 'cabbage',
+                'peas': 'peas', 'squash': 'squash', 'zucchini': 'zucchini', 'eggplant': 'eggplant',
+                'herbs': 'herbs', 'basil': 'basil', 'parsley': 'parsley', 'cilantro': 'cilantro'
+            };
+            
+            for (let crop in crops) {
+                if (message.includes(crop)) return crops[crop];
+            }
+            return null;
+        }
+
+        function extractProblemType(message) {
+            if (message.includes('pest') || message.includes('bug') || message.includes('insect')) return 'pest';
+            if (message.includes('disease') || message.includes('fungus') || message.includes('blight')) return 'disease';
+            if (message.includes('soil') || message.includes('ph') || message.includes('nutrient')) return 'soil';
+            if (message.includes('water') || message.includes('irrigation') || message.includes('drought')) return 'water';
+            if (message.includes('fertilizer') || message.includes('feed') || message.includes('nutrition')) return 'nutrition';
+            if (message.includes('weed') || message.includes('weeds')) return 'weed';
+            return null;
+        }
+
+        function extractSeasonContext(message) {
+            if (message.includes('spring')) return 'spring';
+            if (message.includes('summer')) return 'summer';
+            if (message.includes('fall') || message.includes('autumn')) return 'fall';
+            if (message.includes('winter')) return 'winter';
+            return null;
+        }
+
+        function generateHowToResponse(message, crop, problem) {
+            const responses = {
+                pest: [
+                    `For organic pest control${crop ? ` on ${crop}` : ''}, start with beneficial insects like ladybugs and lacewings. Use neem oil spray, diatomaceous earth, or insecticidal soap. Row covers provide physical protection while allowing air and light through.`,
+                    `Natural pest management${crop ? ` for ${crop}` : ''} includes companion planting (marigolds, basil, nasturtiums), encouraging beneficial predators, and using organic sprays like garlic or soap solution. Always identify the pest first for targeted treatment.`
+                ],
+                disease: [
+                    `Disease prevention${crop ? ` in ${crop}` : ''} starts with proper spacing for air circulation, avoiding overhead watering, and choosing disease-resistant varieties. Remove affected plants immediately and use copper-based organic fungicides when necessary.`,
+                    `For organic disease control${crop ? ` on ${crop}` : ''}, focus on prevention: improve soil drainage, ensure good air circulation, water at soil level, and use compost tea or baking soda spray for fungal issues.`
+                ],
+                soil: [
+                    `Improve soil health by adding 2-4 inches of compost annually, testing pH levels, and maintaining organic matter at 3-5%. Use cover crops, avoid compaction, and add organic amendments like aged manure or leaf mold.`,
+                    `Build healthy soil through composting, crop rotation, and minimal tillage. Add organic matter, maintain proper pH (6.0-7.0 for most crops), and encourage beneficial microorganisms with compost tea applications.`
+                ],
+                water: [
+                    `Efficient watering${crop ? ` for ${crop}` : ''} means deep, infrequent watering to encourage deep roots. Use drip irrigation, mulch heavily, and water early morning to reduce evaporation and disease risk.`,
+                    `Water management${crop ? ` for ${crop}` : ''} involves monitoring soil moisture, using mulch to retain water, collecting rainwater, and choosing drought-resistant varieties. Water deeply but less frequently.`
+                ],
+                nutrition: [
+                    `Organic fertilization${crop ? ` for ${crop}` : ''} uses compost, aged manure, fish emulsion, and bone meal. Feed the soil, not just the plant. Apply balanced organic fertilizers and supplement with compost tea.`,
+                    `Natural nutrition${crop ? ` for ${crop}` : ''} comes from compost, green manures, and organic amendments. Use slow-release organic fertilizers and maintain healthy soil biology for nutrient availability.`
+                ]
+            };
+            
+            if (problem && responses[problem]) {
+                return responses[problem][Math.floor(Math.random() * responses[problem].length)];
+            }
+            
+            return `Here's how to approach your ${crop || 'farming'} question organically: Start with healthy soil as your foundation, practice preventive measures, use natural methods first, and maintain detailed records. Focus on building a balanced ecosystem in your garden.`;
+        }
+
+        function generateWhatResponse(message, crop, problem) {
+            if (message.includes('best') || message.includes('good')) {
+                const bestPractices = {
+                    pest: `The best organic pest control methods include beneficial insects, companion planting, neem oil, diatomaceous earth, and row covers. Prevention is always better than treatment.`,
+                    disease: `Best disease prevention includes proper spacing, crop rotation, choosing resistant varieties, and maintaining good air circulation. Organic copper fungicides work for treatment.`,
+                    soil: `The best soil amendments are compost, aged manure, leaf mold, and cover crops. Test your soil pH and add organic matter regularly for optimal health.`,
+                    water: `Best watering practices include deep, infrequent watering, drip irrigation, morning watering, and heavy mulching to retain moisture and prevent disease.`,
+                    nutrition: `Best organic fertilizers include compost, fish emulsion, kelp meal, bone meal, and aged manure. Feed the soil ecosystem, not just the plants.`
+                };
+                
+                if (problem && bestPractices[problem]) {
+                    return bestPractices[problem];
+                }
+            }
+            
+            return `For your ${crop || 'farming'} question, organic approaches focus on natural methods, soil health, and ecosystem balance. The key is working with nature rather than against it.`;
+        }
+
+        function generateWhenResponse(message, crop, season) {
+            const timing = {
+                spring: `Spring is perfect for cool-season crops like lettuce, peas, and spinach. Start warm-season crops indoors and transplant after last frost.`,
+                summer: `Summer focus on maintaining crops, succession planting, and pest monitoring. Harvest regularly and preserve excess produce.`,
+                fall: `Fall is ideal for cool-season crops again, winter preparation, and planning next year's garden. Collect seeds and add organic matter.`,
+                winter: `Winter is planning time - order seeds, maintain tools, continue composting, and study new techniques for next season.`
+            };
+            
+            if (season && timing[season]) {
+                return timing[season];
+            }
+            
+            return `Timing depends on your climate zone and crop type. Cool-season crops in spring/fall, warm-season after last frost. Check your local frost dates and plan accordingly.`;
+        }
+
+        function generateWhyResponse(message, crop, problem) {
+            return `Understanding the 'why' helps you make better decisions. In organic farming, problems usually stem from imbalanced soil, poor growing conditions, or ecosystem disruption. Focus on root causes rather than symptoms.`;
+        }
+
+        function generateWhereResponse(message, crop) {
+            return `Location matters in farming! Consider your climate zone, soil type, sun exposure, and local growing conditions. Most vegetables need 6-8 hours of direct sunlight and well-draining soil.`;
+        }
+
+        function generateGeneralResponse(message, crop, problem) {
+            const general = [
+                `Great question about organic farming! The key principles are healthy soil, natural pest management, crop rotation, and working with nature's cycles.`,
+                `In organic farming, we focus on building soil health first, then everything else follows. Prevention is always better than treatment.`,
+                `Organic farming success comes from understanding your ecosystem, timing your actions with natural cycles, and maintaining balance.`,
+                `The organic approach emphasizes long-term soil health, biodiversity, and sustainable practices that work with natural systems.`
+            ];
+            
+            return general[Math.floor(Math.random() * general.length)];
+        }
+
+        function addSeasonalContext(season) {
+            const seasonal = {
+                spring: ` This is perfect timing for spring - prepare your beds, start cool-season crops, and plan your growing season.`,
+                summer: ` Summer requires vigilant care - maintain consistent watering, monitor for pests, and harvest regularly.`,
+                fall: ` Fall is great for cool-season crops and preparation for winter - a productive time in the garden.`,
+                winter: ` Winter is planning season - perfect time to prepare for next year and maintain your tools.`
+            };
+            
+            return seasonal[season] || '';
+        }
+
+        function generateFollowUp(crop, problem) {
+            const followUps = [
+                ` Would you like more specific guidance about your growing conditions or climate zone?`,
+                ` Feel free to ask about any other aspect of your organic farming journey!`,
+                ` I can provide more detailed advice if you share your specific situation or location.`,
+                ` Let me know if you need help with any other organic farming challenges!`,
+                ` Ask me about related topics like companion planting or organic certification!`
+            ];
+            
+            return followUps[Math.floor(Math.random() * followUps.length)];
+        }
+
+        function addMessage(message, isUser = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user-message' : 'ai-message'}`;
+            
+            if (isUser) {
+                messageDiv.innerHTML = `<strong>You:</strong> ${message}`;
+            } else {
+                messageDiv.innerHTML = `<strong>🌱 AgriGenius:</strong> ${message}`;
+            }
+            
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function showLoading() {
+            loading.style.display = 'block';
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function hideLoading() {
+            loading.style.display = 'none';
+        }
+
+        chatForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const userMessage = chatInput.value.trim();
+            if (!userMessage) return;
+            
+            // Add user message
+            addMessage(userMessage, true);
+            chatInput.value = '';
+            
+            // Show loading
+            showLoading();
+            
+            // Simulate AI thinking time
+            setTimeout(function() {
+                hideLoading();
+                const aiResponse = getAIResponse(userMessage);
+                addMessage(aiResponse);
+            }, 1000 + Math.random() * 2000);
+        });
+
+        // Also add click event for send button
+        document.querySelector('.send-button').addEventListener('click', function(e) {
+            e.preventDefault();
+            chatForm.dispatchEvent(new Event('submit'));
+        });
+
+        // Auto-focus on input
+        chatInput.focus();
+
+        // Smooth scrolling for CTA button
+        document.querySelector('.cta-button').addEventListener('click', (e) => {
+            e.preventDefault();
+            document.getElementById('chat').scrollIntoView({ behavior: 'smooth' });
+        });
+
+        // Sample questions for better user experience
+        const sampleQuestions = [
+            "How do I improve my soil's organic matter?",
+            "What are natural ways to control aphids?",
+            "Best companion plants for tomatoes?",
+            "How to plan a 4-year crop rotation?",
+            "When should I plant cool-season crops?",
+            "How to make organic compost?",
+            "Natural fertilizers for vegetables?",
+            "How to maintain organic certification?"
+        ];
+
+        // Enhanced sample question functionality
+        function addSampleQuestions() {
+            const sampleDiv = document.createElement('div');
+            sampleDiv.className = 'sample-questions';
+            sampleDiv.innerHTML = `
+                <div style="padding: 20px; background: rgba(30, 41, 59, 0.8); border-top: 1px solid rgba(34, 197, 94, 0.2);">
+                    <h4 style="color: #22c55e; margin-bottom: 15px; text-align: center;">Try asking:</h4>
+                    <div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;">
+                        ${sampleQuestions.map(q => `
+                            <button class="sample-question" style="
+                                background: rgba(34, 197, 94, 0.1); 
+                                color: #22c55e; 
+                                border: 1px solid rgba(34, 197, 94, 0.3); 
+                                padding: 8px 12px; 
+                                border-radius: 15px; 
+                                cursor: pointer; 
+                                font-size: 0.9rem;
+                                transition: all 0.3s ease;
+                            " onclick="handleSampleQuestion('${q.replace(/'/g, "\\'")}')">
+                                ${q}
+                            </button>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            document.querySelector('.chat-container').appendChild(sampleDiv);
+        }
+
+        // Handle sample question clicks
+        function handleSampleQuestion(question) {
+            chatInput.value = question;
+            chatInput.focus();
+            // Auto-submit the question
+            setTimeout(function() {
+                chatForm.dispatchEvent(new Event('submit'));
+            }, 100);
+        }
+
+        // Add sample questions on page load
+        addSampleQuestions();
+    </script>
+</body>
+</html>
